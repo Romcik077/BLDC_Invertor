@@ -68,13 +68,13 @@ void timer0Detach(uint8_t interruptNum)
 	{
 		switch (interruptNum) {
 			case TIMER0_OVERFLOW_INT:
-				cbi(TIMSK0, TOIE0);		// Overflow Interrupt Enable
+				cbi(TIMSK0, TOIE0);		// Overflow Interrupt Disable
 				break;
 			case TIMER0_OUTCOMPAREA_INT:
-				cbi(TIMSK0, OCIE0A);	// Output Compare A Match Interrupt Enable
+				cbi(TIMSK0, OCIE0A);	// Output Compare A Match Interrupt Disable
 				break;
 			case TIMER0_OUTCOMPAREB_INT:
-				cbi(TIMSK0, OCIE0B);	// Output Compare B Match Interrupt Enable
+				cbi(TIMSK0, OCIE0B);	// Output Compare B Match Interrupt Disable
 				break;
 			default:
 				break;
@@ -97,7 +97,7 @@ long timer0GetOverflowCount(void)
 	return Timer0Reg0;
 }
 
-void timer0CTCInit(void)
+inline void timer0CTCInit(void)
 {
 	sbi(TCCR0A, WGM01);
 	cbi(TCCR0A, WGM00);
@@ -106,7 +106,7 @@ void timer0CTCInit(void)
 	OCR0A = 0;
 }
 
-void timer0CTCSetPeriod(uint8_t period)
+void timer0CTCSetPeriod(uint8_t period) // in us
 {
 	//int temp = (F_CPU*((float)period/1000))/(2*timer0GetPrescaler())-1;
 	int temp = (F_CPU)/(timer0GetPrescaler()*1000000/period)-1;

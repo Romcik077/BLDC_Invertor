@@ -16,10 +16,13 @@ unsigned char bldcStatus = BLDC_STOP;
 unsigned int periodCounter = 0;
 unsigned char bldcPhase = 0;
 unsigned int phasePeriod = 12000; // us
-unsigned int rumpUpCounter = 5;
+unsigned int rumpUpCounter = 0;
 
 void bldcProcesing(void);
 void bldcSwitchPhase(unsigned char phase);
+void bldcSensorllesPhaseA(void);
+void bldcSensorllesPhaseB(void);
+void bldcSensorllesPhaseC(void);
 
 void bldcInit(void)
 {
@@ -49,11 +52,17 @@ void bldcInit(void)
 	bldcPscValues.deadtime1 = bldcPwmPeriod;
 	pscUpdateAll(&bldcPscValues);
 
+	// Initialize ACMP
+	acmpInit();
+	acmp0SetIntHandler(&bldcSensorllesPhaseA);
+	acmp1SetIntHandler(&bldcSensorllesPhaseB);
+	acmp2SetIntHandler(&bldcSensorllesPhaseC);
+
 	// Initialize timer0 for speed control
-	timer0Init(TIMER_CLK_DIV8);
+	timer0Init(TIMER_CLK_DIV1024);
 	timer0CTCInit();
 	timer0CTCSetPeriod(TIMER_PERIOD);// in us
-	timer0Attach(TIMER0_OUTCOMPAREA_INT, bldcProcesing);
+	timer0Attach(TIMER0_OUTCOMPAREA_INT, &bldcProcesing);
 
 	// Starting
 	psc0Start();
@@ -85,6 +94,8 @@ void bldcSetPwmDuty(uint8_t duty)
 
 void bldcProcesing(void)
 {
+	// TODO excluding period counter
+	// TODO create two variant of app with timer and only on interrupt
 	periodCounter++;
 	rumpUpCounter++;
 	if(bldcStatus == BLDC_STOP)
@@ -92,10 +103,7 @@ void bldcProcesing(void)
 		psc0DisableBothOutputs();
 		psc1DisableBothOutputs();
 		psc2DisableBothOutputs();
-		bldcDisableGate();
 	} else {
-		bldcEnableGate();
-
 		if(periodCounter >= CONV_uS(phasePeriod))
 		{
 			bldcSwitchPhase(bldcCWPhase[bldcPhase]);
@@ -106,7 +114,7 @@ void bldcProcesing(void)
 			}
 			periodCounter = 0;
 		}
-
+		// TODO move rumpup to function and call at start motor
 		if(rumpUpCounter >= CONV_mS(30))
 		{
 			if(phasePeriod > 5000)
@@ -152,3 +160,21 @@ void bldcSwitchPhase(unsigned char phase)
 			break;
 	}
 }
+
+void bldcSensorllesPhaseA(void)
+{
+	// TODO write formula for calculating 30 degree from rpm
+//	timer0CTCSetPeriod(TIMER_PERIOD);// in us
+//	timer0Attach(TIMER0_OUTCOMPAREA_INT, &bldcProcesing);
+}
+
+void bldcSensorllesPhaseB(void)
+{
+
+}
+
+void bldcSensorllesPhaseC(void)
+{
+
+}
+

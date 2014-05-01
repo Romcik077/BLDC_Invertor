@@ -13,7 +13,7 @@
 #include <global.h>
 #include "hal/timer0/timer0.h"
 #include "hal/psc/psc_drv.h"
-#include "hal/spi/spi.h"
+#include "hal/acmp/acmp.h"
 
 // Maximum period is 64us
 #define PWM_PERIOD 5 	//(PWM_PERIOD)/(1/PLL_CLK/1000000);

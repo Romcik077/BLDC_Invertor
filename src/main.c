@@ -2,7 +2,7 @@
 #include <util/delay.h>
 #include <stdio.h>
 #include "global.h"
-//#include "hal/uart/uart.h"
+#include "hal/uart/uart.h"
 #include "hal/psc/psc_drv.h"
 #include "driver/bldc_ctrl/bldc_ctrl.h"
 //#include "driver/rprintf/rprintf.h"

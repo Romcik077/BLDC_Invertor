@@ -8,7 +8,7 @@
 #include "acmp.h"
 
 typedef void (*voidFunc)(void);
-volatile static voidFunc acmp0IntHandler, acmp1IntHandler, acmp2IntHandler;
+volatile static voidFunc acmp0IntHandler = 0, acmp1IntHandler = 0, acmp2IntHandler = 0;
 
 void acmpInit(void)
 {
